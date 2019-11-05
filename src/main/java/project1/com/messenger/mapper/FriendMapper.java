@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import project1.com.messenger.entities.Friend;
 
-public class FriendMapper implements RowMapper<Friend>{
+public class FriendMapper implements RowMapper<Friend> {
 	public Friend mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Friend friend = new Friend();
 		friend.setUserId(rs.getInt("user_id"));

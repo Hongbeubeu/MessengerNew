@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 //import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import project1.com.messenger.entities.User;
 import project1.com.messenger.service.MessengerService;
@@ -28,13 +30,17 @@ public class HomeController {
 		model.addAttribute("user", new User());
 		return "Login";
 	}
+	
 	@RequestMapping(value = {"/register"}, method = RequestMethod.GET)
 	public String directRegister(Model model) {
 		model.addAttribute("user", new User());
 		return "Register";
 	}
+	
 	@RequestMapping(value = {"/processLogin"}, method= RequestMethod.POST)
-	public String login(@ModelAttribute("User") User user, Model model,HttpSession session) {
+	public String login(@ModelAttribute("User") User user, 
+						Model model,
+						HttpSession session) {
 		if(session.getAttribute("isLogin") != null && session.getAttribute("isLogin").equals(false)) {
 			session.invalidate();
 			return "redirect:/login";
@@ -47,12 +53,12 @@ public class HomeController {
 			session.setAttribute("id", tuser.getId());
 			model.addAttribute("user", tuser);
 			return "Profile";
-		}
-		
-		
+		}	
 	}
+	
 	@RequestMapping("/processRegister")
-	public String register(@ModelAttribute("User") User user, Model model) {
+	public String register(@ModelAttribute("User") User user, 
+						   Model model) {
 		User tuser = messengerService.register(user);
 		if( tuser == null)
 			return "Error";
@@ -60,43 +66,53 @@ public class HomeController {
 			return "redirect:/login";
 		}
 	}
-	@RequestMapping("/messenger")
-	public String directMessenger(@ModelAttribute("User") User user, Model model1, Model model2, HttpSession session) {
+	
+	@RequestMapping("/chat")
+	public String directMessenger(@RequestParam(value = "userId", required = false) int userId, 
+								  @RequestParam(value = "findFriend", required = false) String email, 
+								  Model model, 
+								  HttpSession session) {
+		if (userId < 1)
+			return "redirect:/login";
 		if(session.getAttribute("isLogin") != null && session.getAttribute("isLogin").equals(true)) {
-			User tuser = messengerService.findById(user.getId());
-			model2.addAttribute("listFriend", messengerService.findFriendOfUserId(user.getId()));
-			model1.addAttribute("user", tuser);
+			model.addAttribute("listFriend", messengerService.findFriendOfUserId(userId));
+			model.addAttribute("findFriend", messengerService.findFriendByEmail(email));
+			model.addAttribute("user", messengerService.findById(userId));
 			return "Messenger";
-		}
-		else{
-				session.setAttribute("isLogin", false);
-				return "redirect:/login";
-			}		
+		} else {
+			session.invalidate();
+			return "redirect:/login";
+		 }		
 	}
 	
 	@RequestMapping("/logout")
-	public String directLogout(HttpSession session,Model model) {
+	public String directLogout(HttpSession session,
+							   Model model) {
 		session.invalidate();
 		model.addAttribute("User", new User());
 		return "redirect:/login";
 	}
 	
 	@RequestMapping("/update")
-	public String directUpdate(@ModelAttribute("User") User user, Model model) {
+	public String directUpdate(@ModelAttribute("User") User user, 
+							   Model model) {
 		User tuser = messengerService.findById(user.getId());
 		model.addAttribute("user", tuser);
 		return "Update";
 	}
 	
 	@RequestMapping("/profile")
-	public String directProfile(@RequestParam("id") int id, Model model, HttpSession session) {
+	public String directProfile(@RequestParam("id") int id, 
+								Model model, 
+								HttpSession session) {
 		User user = messengerService.findById(id);
 		model.addAttribute("user", user);
 		return "Profile";
 	}
 	
 	@RequestMapping("/processUpdate")
-	public String update(@ModelAttribute("User") User user, Model model) {
+	public String update(@ModelAttribute("User") User user, 
+						 Model model) {
 		/*messengerService.update(user);
 	
 		try {
@@ -114,18 +130,31 @@ public class HomeController {
 		return "Profile";	
 		}	
 	@RequestMapping("/search")
-	public String search(@RequestParam("email") String email, Model model) {
-		User user = messengerService.findByEmail(email);
-		model.addAttribute("user", user);
-		return "Messenger";
+	public RedirectView search(@RequestParam("email") String email, 
+							   @RequestParam("userId") int userId, 
+							   RedirectAttributes redirectAttributes) {
+		redirectAttributes.addAttribute("findFriend", email);
+		redirectAttributes.addAttribute("userId", userId);
+		return new RedirectView("chat");
+		
 	}
 	
 	@RequestMapping("/addFriend")
-	public String addFriend(@RequestParam("userId") int userId, @RequestParam("friendId") int friendId, Model model) {
+	public RedirectView addFriend(@RequestParam("userId") int userId, 
+								  @RequestParam("friendId") int friendId, 
+								  RedirectAttributes redirectAttributes) {
 		messengerService.addFriend(userId, friendId);
-		User user = messengerService.findById(userId);
-		model.addAttribute("user", user);
-		return "Messenger";
+		redirectAttributes.addAttribute("userId", userId);
+		return new RedirectView("chat");
+	}
+	
+	@RequestMapping("/chatRoom")
+	public String chatRoom(@RequestParam("friendId") int friendId, 
+						   @RequestParam("userId") int userId, 
+						   Model model) {
+		model.addAttribute("friendId", friendId);
+		model.addAttribute("userId", userId);
+		return "Test";
 	}
 }
 

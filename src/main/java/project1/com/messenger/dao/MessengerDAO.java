@@ -49,6 +49,16 @@ public class MessengerDAO {
 							);
 	}
 	
+	public User findFriendByEmail(String email) {
+		String sql = "SELECT id, first_name, last_name, avatar FROM user WHERE email = ?";
+		try {
+			User user =  jdbcTemplate.queryForObject(sql, new FriendListMapper(), email);
+			return user;
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	
 	public User findByEmail(String email) {
 		String sql = "SELECT * FROM user WHERE email = ?";
 		try {
@@ -78,15 +88,6 @@ public class MessengerDAO {
 								 friend.getCreateAt()
 							);
 	}
-	public Friend findById(int userId, int friendId) {
-		String sql = "SELECT * FROM friend WHERE user_id = ? AND friend_id = ?";
-		try {
-			Friend friend =  jdbcTemplate.queryForObject(sql, new FriendMapper(), userId, friendId);
-			return friend;
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
-	}
 	
 	public List<User> findListFriendOfUserId(int id) {
 		String sql = "SELECT id, first_name, last_name, avatar "
@@ -100,6 +101,22 @@ public class MessengerDAO {
 			return listFriend;
 		} catch (EmptyResultDataAccessException e) {
 			return null;
+		}
+	}
+	
+	public boolean checkFriend(int userId, int friendId) {
+		String sql = "SELECT * "
+				+ "FROM friend " 
+				+ "WHERE user_id = ? "
+				+ "AND friend_id = ? ";
+		try {
+			if(jdbcTemplate.queryForObject(sql, new FriendMapper(), userId, friendId) == null)
+				return false;
+			else 
+				return true;
+			
+		} catch (EmptyResultDataAccessException e) {
+			return false;
 		}
 	}
 }

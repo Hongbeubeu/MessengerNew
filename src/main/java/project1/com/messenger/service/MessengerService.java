@@ -25,6 +25,9 @@ public class MessengerService {
 	public User findByEmail(String email) {
 		return messengerDAO.findByEmail(email);
 	}
+	public User findFriendByEmail(String email) {
+		return messengerDAO.findFriendByEmail(email);
+	}
 	public User findById(int id) {
 		return messengerDAO.findById(id);
 	}
@@ -97,13 +100,11 @@ public class MessengerService {
 		  }
 		  return hashtext;
 	}
-	public Friend findId(int userId, int friendId) {
-		return messengerDAO.findById(userId, friendId);
-	}
+	
 	public void addFriend(int userId, int friendId) {
 		if (userId == friendId) return;
-		Friend friend = findId(userId, friendId);
-		if(friend == null) {
+		boolean check = messengerDAO.checkFriend(userId, friendId);
+		if(check == false) {
 			Friend friend1 = new Friend();
 			friend1.setCreateAt(DateTime.setDateToInt());
 			friend1.setUserId(userId);
@@ -114,6 +115,7 @@ public class MessengerService {
 			messengerDAO.addFriend(friend1);
 		}
 	}
+	
 	public List<User> findFriendOfUserId(int id) {
 		List<User> listFriend = messengerDAO.findListFriendOfUserId(id);
 		return listFriend;

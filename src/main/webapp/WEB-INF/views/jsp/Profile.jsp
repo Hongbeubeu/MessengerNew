@@ -11,7 +11,7 @@
 </head>
 <body>
 	<c:url value="/update" var="update"/>	
-	<c:url value="/messenger" var="messenger"/>
+	<c:url value="/chat" var="chat"/>
 	<c:url value="/logout" var="logout"/>
 	<div class="container emp-profile">
 		<div class="row"> 
@@ -23,17 +23,19 @@
 		     	</div>
 			</div>
 			<div class="col-md-2">
+			
 				<form:form action="${update}" method="POST" modelAttribute="user">
 			   		<button class="profile-edit-btn" name="btnAddMore">Edit Profile</button>
-			   		<form:input type="hidden" path="id" value="${cutomer.id }"/>
+			   		<input type="hidden" name  = "id" value = "<%= session.getAttribute("id") %>"/>
 			   	</form:form>
-			   	<form:form action="${messenger}" method="POST" modelAttribute="user">
+			   	<form:form action="${chat}" method="POST">
 			   		<button class="messenger-btn" name="btnAddMore" >Messenger</button>
-			   		<form:input type="hidden" path="id" value="${cutomer.id }"/>
+			   		<input type="hidden" name  = "userId" value = "<%= session.getAttribute("id") %>"/>
 			   	</form:form>
 			   	<form:form action="${logout}" method="POST">
 			   		<button class="logout-btn" name="btnAddMore" >Logout</button>
 			   	</form:form>
+			
 			</div> 
 		 </div>		 
 		 <div class="row">

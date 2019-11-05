@@ -18,29 +18,30 @@
 			$('#action_btn').click(function(){
 				$('.action_menu').toggle();
 			});
-				});
+		});
 	</script>
 </head>
 <body>	
  	<c:url value="/search" var="search"/>
  	<c:url value="/addFriend" var="addFriend"/>
+ 	<c:url value="/chatRoom" var="chatRoom"/>
 	<div class="row">
-		<div class="chat card col-md-3">
-			<div class="contacts_card">
+		<div class="chat col-md-3">
+			<div class="card contacts_card " >
 				<div class="card-header">
 					<form:form action="${search}" method="POST">
 						<div class="input-group">
-							<input type="email" name="email" placeholder="Search..." value="" class="form-control search"/>
+							<input type="email" name="email" placeholder="Search..." value="" class="form-control search" required = "required"/>
 							<div class="input-group-prepend">
 								<span class="input-group-text search_btn"><i class="fas fa-search" ></i></span>
 							</div>
+							<input type="hidden" name  = "userId" value = "<%= session.getAttribute("id") %>"/>
 						</div>
-						
 					</form:form>
 				</div>
 				<div class="card-body contacts_body">	'
-				<ui class="contacts"> 
-					<c:if test="${not empty user }">
+				<ul class="contacts"> 
+					<c:if test="${not empty findFriend }">
 					<li class="active"  id="action_btn">
 						<div class="d-flex bd-highlight">
 							<div class="img_cont">
@@ -48,8 +49,8 @@
 								<span class="online_icon"></span>
 							</div>
 							<div class="user_info">
-								<span>${user.lastName} ${user.firstName}</span>
-								<p>${user.firstName} is online</p>
+								<span>${findFriend.lastName} ${findFriend.firstName}</span>
+								<p>${findFriend.firstName} is online</p>
 							</div>
 						</div>
 					</li>
@@ -58,19 +59,18 @@
 						<form:form action="${addFriend}" method="POST">
 							<button class= "messenger-btn">Contact</button>
 				   			<input type="hidden" name="userId" value = "<%= session.getAttribute("id") %>"/>
-				   			<input type="hidden" name="friendId" value="${user.id}"/>
+				   			<input type="hidden" name="friendId" value="${findFriend.id}"/>
 			   			</form:form>
 			   			<form:form action="${chat}" method="POST">
 							<button class= "messenger-btn">Chat</button>
 				   			<input type="hidden" name="userId" value = "<%= session.getAttribute("id") %>"/>
-				   			<input type="hidden" name="friendId" value="${user.id}"/>
+				   			<input type="hidden" name="friendId" value="${findFriend.id}"/>
 			   			</form:form>
 					</ul>
 					</div>	
 					</c:if>
-					
 					<c:forEach var="friend" items="${listFriend}">
-						<li class="active"  id="action_btn">
+						<li class="active">
 							<div class="d-flex bd-highlight">
 								<div class="img_cont">
 									<img src="<c:url value="/resources/image/${friend.avatar }"/>" class="rounded-circle user_img">
@@ -79,12 +79,16 @@
 								<div class="user_info">
 									<span>${friend.lastName} ${friend.firstName}</span>
 									<p>${friend.firstName} is online</p>
+									<form:form action="${chatRoom}" method="POST">
+										<button class = "messenger-btn-x">chat</button>
+										<input type="hidden" name="userId" value = "<%= session.getAttribute("id") %>"/>
+				   						<input type="hidden" name="friendId" value="${friend.id}"/>
+									</form:form>
 								</div>
 							</div>
 						</li>
 					</c:forEach>
-					
-				</ui>
+				</ul>
 				</div>
 				<div class="card-footer"></div>
 			</div>
@@ -93,11 +97,13 @@
 			<div class="card-header msg_head">
 				<div class="d-flex bd-highlight">
 					<div class="img_cont">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img">
+						<form:form action="${profile }">
+							<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img">
+						</form:form>
 						<span class="online_icon"></span>
 					</div>
-					<div class="user_info">
-						<span>Chat</span>
+					<div class="user_info">	
+						<span>${user.lastName } ${user.firstName }</span>
 						<p>Active now</p>
 					</div>
 					<div class="video_cam">
@@ -105,9 +111,80 @@
 						<span><i class="fas fa-phone"></i></span>
 					</div>
 				</div>
-				
 			</div>
 			<div class="card-body msg_card_body">
+				<div class="d-flex justify-content-start mb-4">
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+					<div class="msg_cotainer">
+						Hi, how are you hongbeu?
+						<span class="msg_time">8:40 AM, Today</span>
+					</div>
+				</div>
+				<div class="d-flex justify-content-end mb-4">
+					<div class="msg_cotainer_send">
+						Hi hongbeu I am good and how about you?
+						<span class="msg_time_send">8:55 AM, Today</span>
+					</div>
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+				</div>
+				<div class="d-flex justify-content-start mb-4">
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+					<div class="msg_cotainer">
+						Hi, how are you hongbeu?
+						<span class="msg_time">8:40 AM, Today</span>
+					</div>
+				</div>
+				<div class="d-flex justify-content-end mb-4">
+					<div class="msg_cotainer_send">
+						Hi hongbeu I am good and how about you?
+						<span class="msg_time_send">8:55 AM, Today</span>
+					</div>
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+				</div>
+				<div class="d-flex justify-content-start mb-4">
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+					<div class="msg_cotainer">
+						Hi, how are you hongbeu?
+						<span class="msg_time">8:40 AM, Today</span>
+					</div>
+				</div>
+				<div class="d-flex justify-content-end mb-4">
+					<div class="msg_cotainer_send">
+						Hi hongbeu I am good and how about you?
+						<span class="msg_time_send">8:55 AM, Today</span>
+					</div>
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+				</div>
+				<div class="d-flex justify-content-start mb-4">
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+					<div class="msg_cotainer">
+						Hi, how are you hongbeu?
+						<span class="msg_time">8:40 AM, Today</span>
+					</div>
+				</div>
+				<div class="d-flex justify-content-end mb-4">
+					<div class="msg_cotainer_send">
+						Hi hongbeu I am good and how about you?Hi hongbeu I am good and how about you?Hi hongbeu I am good and how about you?Hi hongbeu I am good and how about you?
+						<span class="msg_time_send">8:55 AM, Today</span>
+					</div>
+					<div class="img_cont_msg">
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
+					</div>
+				</div>
 				<div class="d-flex justify-content-start mb-4">
 					<div class="img_cont_msg">
 						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
