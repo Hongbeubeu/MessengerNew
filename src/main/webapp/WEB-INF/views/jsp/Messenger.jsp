@@ -96,113 +96,49 @@
 		<div class="chat card col-md-9">
 			<div class="card-header msg_head">
 				<div class="d-flex bd-highlight">
+				<c:if test= "${not empty conversation }">
 					<div class="img_cont">
-						<form:form action="${profile }">
-							<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img">
-						</form:form>
+						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img">
 						<span class="online_icon"></span>
 					</div>
-					<div class="user_info">	
-						<span>${user.lastName } ${user.firstName }</span>
+					<div class="user_info">
+						<span>${conversation.conversationName}</span>
 						<p>Active now</p>
 					</div>
 					<div class="video_cam">
 						<span><i class="fas fa-video"></i></span>
 						<span><i class="fas fa-phone"></i></span>
 					</div>
+				</c:if>
 				</div>
 			</div>
 			<div class="card-body msg_card_body">
-				<div class="d-flex justify-content-start mb-4">
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-					<div class="msg_cotainer">
-						Hi, how are you hongbeu?
-						<span class="msg_time">8:40 AM, Today</span>
-					</div>
-				</div>
-				<div class="d-flex justify-content-end mb-4">
-					<div class="msg_cotainer_send">
-						Hi hongbeu I am good and how about you?
-						<span class="msg_time_send">8:55 AM, Today</span>
-					</div>
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-				</div>
-				<div class="d-flex justify-content-start mb-4">
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-					<div class="msg_cotainer">
-						Hi, how are you hongbeu?
-						<span class="msg_time">8:40 AM, Today</span>
-					</div>
-				</div>
-				<div class="d-flex justify-content-end mb-4">
-					<div class="msg_cotainer_send">
-						Hi hongbeu I am good and how about you?
-						<span class="msg_time_send">8:55 AM, Today</span>
-					</div>
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-				</div>
-				<div class="d-flex justify-content-start mb-4">
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-					<div class="msg_cotainer">
-						Hi, how are you hongbeu?
-						<span class="msg_time">8:40 AM, Today</span>
-					</div>
-				</div>
-				<div class="d-flex justify-content-end mb-4">
-					<div class="msg_cotainer_send">
-						Hi hongbeu I am good and how about you?
-						<span class="msg_time_send">8:55 AM, Today</span>
-					</div>
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-				</div>
-				<div class="d-flex justify-content-start mb-4">
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-					<div class="msg_cotainer">
-						Hi, how are you hongbeu?
-						<span class="msg_time">8:40 AM, Today</span>
-					</div>
-				</div>
-				<div class="d-flex justify-content-end mb-4">
-					<div class="msg_cotainer_send">
-						Hi hongbeu I am good and how about you?Hi hongbeu I am good and how about you?Hi hongbeu I am good and how about you?Hi hongbeu I am good and how about you?
-						<span class="msg_time_send">8:55 AM, Today</span>
-					</div>
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-				</div>
-				<div class="d-flex justify-content-start mb-4">
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-					<div class="msg_cotainer">
-						Hi, how are you hongbeu?
-						<span class="msg_time">8:40 AM, Today</span>
-					</div>
-				</div>
-				<div class="d-flex justify-content-end mb-4">
-					<div class="msg_cotainer_send">
-						Hi hongbeu I am good and how about you?
-						<span class="msg_time_send">8:55 AM, Today</span>
-					</div>
-					<div class="img_cont_msg">
-						<img src="<c:url value="/resources/image/${user.avatar }"/>" class="rounded-circle user_img_msg">
-					</div>
-				</div>
+				<c:if test= "${not empty chatsentence }">
+					<c:forEach var="chat" items="${chatsentence}">
+						<c:if test = "${chatsentence.userId != session.id }">
+							<div class="d-flex justify-content-start mb-4">
+								<div class="img_cont_msg">
+									<img src="<c:url value="/resources/image/${chat.avatar }"/>" class="rounded-circle user_img_msg">
+								</div>
+								<div class="msg_cotainer">
+									${chat.context}
+									<span class="msg_time">${chat.createAt}</span>
+								</div>
+							</div>
+						</c:if>
+						<c:if test="${chatsentence.userId == session.id }">
+							<div class="d-flex justify-content-end mb-4">
+								<div class="msg_cotainer_send">
+									${chat.context }
+									<span class="msg_time_send">${chat.createAt}</span>
+								</div>
+								<div class="img_cont_msg">
+									<img src="<c:url value="/resources/image/${chat.avatar }"/>" class="rounded-circle user_img_msg">
+								</div>
+							</div>
+						</c:if>
+					</c:forEach>
+				</c:if>
 			</div>
 			<div class="card-footer">
 				<div class="input-group">

@@ -1,7 +1,5 @@
 package project1.com.messenger.controller;
 
-//import java.io.File;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-//import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -68,15 +65,21 @@ public class HomeController {
 	}
 	
 	@RequestMapping("/chat")
-	public String directMessenger(@RequestParam(value = "userId", required = false) int userId, 
+	public String directMessenger(@RequestParam(value = "userId", required = false) Integer userId, 
 								  @RequestParam(value = "findFriend", required = false) String email, 
+								  @RequestParam(value = "chatId", required = false) Integer chatId,
 								  Model model, 
 								  HttpSession session) {
-		if (userId < 1)
+		if (userId == null)
 			return "redirect:/login";
 		if(session.getAttribute("isLogin") != null && session.getAttribute("isLogin").equals(true)) {
 			model.addAttribute("listFriend", messengerService.findFriendOfUserId(userId));
 			model.addAttribute("findFriend", messengerService.findFriendByEmail(email));
+			if(chatId == null) {
+				chatId = messengerService.findNewestConversation(userId);
+			}
+			model.addAttribute("conversation", messengerService.findConversation(chatId));
+			model.addAttribute("chatsentence", messengerService.findListChatSentence(chatId));
 			model.addAttribute("user", messengerService.findById(userId));
 			return "Messenger";
 		} else {
@@ -149,12 +152,19 @@ public class HomeController {
 	}
 	
 	@RequestMapping("/chatRoom")
-	public String chatRoom(@RequestParam("friendId") int friendId, 
-						   @RequestParam("userId") int userId, 
-						   Model model) {
-		model.addAttribute("friendId", friendId);
-		model.addAttribute("userId", userId);
-		return "Test";
+	public RedirectView chatRoom(@RequestParam("friendId") int friendId, 
+						   		 @RequestParam("userId") int userId,
+						   		 RedirectAttributes redirectAttributes,
+						   		 Model model) {
+		int chatId = messengerService.getChatId(userId, friendId);
+		int date = 1;
+		if (chatId == 0) {
+			date = messengerService.setChatRoom(userId, friendId);
+			chatId = messengerService.setMemberOfChatRoom(date, userId, friendId);
+		}
+		redirectAttributes.addAttribute("chatId", chatId);
+		redirectAttributes.addAttribute("userId", userId);
+		return new RedirectView("chat");
 	}
 }
 

@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h1>${userId}</h1>
-<h2>${friendId}</h2>
+
+<h1>${date }</h1>
 </body>
 </html>

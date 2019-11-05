@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import project1.com.messenger.config.DateTime;
 import project1.com.messenger.dao.MessengerDAO;
 import project1.com.messenger.entities.User;
+import project1.com.messenger.entities.ChatSentence;
+import project1.com.messenger.entities.Conversation;
 import project1.com.messenger.entities.Friend;
 
 @Service
@@ -119,5 +121,36 @@ public class MessengerService {
 	public List<User> findFriendOfUserId(int id) {
 		List<User> listFriend = messengerDAO.findListFriendOfUserId(id);
 		return listFriend;
+	}
+	
+	public List<ChatSentence> findListChatSentence(int chatId){
+		List<ChatSentence> chatSentence = messengerDAO.findListChatSentence(chatId);
+		return chatSentence;
+	}
+	
+	public Conversation findConversation(int chatId) {
+		Conversation conversation = messengerDAO.findConversation(chatId);
+		return conversation;
+	}
+	
+	public boolean checkConversation(int chatId) {
+		return messengerDAO.checkConversation(chatId);
+	}
+	
+	public int getChatId(int userId, int friendId) {
+		return messengerDAO.getChatId(userId, friendId);
+	}
+	
+	public int setChatRoom(int userId, int friendId) {
+		int date = messengerDAO.setChatRoom(friendId);
+		return date;
+	}
+	
+	public int setMemberOfChatRoom(int date, int userId, int friendId) {
+		return messengerDAO.setMemberOfChatRoom(date, userId, friendId);
+	}
+	
+	public int findNewestConversation(int userId) {
+		return messengerDAO.findNewestConversation(userId);
 	}
 }

@@ -8,8 +8,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import project1.com.messenger.config.*;
+
 import project1.com.messenger.entities.User;
+import project1.com.messenger.entities.ChatSentence;
+import project1.com.messenger.entities.Conversation;
 import project1.com.messenger.entities.Friend;
+import project1.com.messenger.entities.Id;
 import project1.com.messenger.mapper.*;
 
 @Repository
@@ -118,5 +123,113 @@ public class MessengerDAO {
 		} catch (EmptyResultDataAccessException e) {
 			return false;
 		}
+	}
+	
+	public Conversation findConversation(int chatId) {
+		String sql = "SELECT * "
+				+ "FROM conversation "
+				+ "WHERE id = ? ";
+		try {
+			Conversation conversation = jdbcTemplate.queryForObject(sql, new ConversationMapper(), chatId);
+			return conversation;
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}		
+	}
+	
+	public boolean checkConversation(int chatId) {
+		String sql = "SELECT * "
+				+ "FROM conversation "
+				+ "WHERE id = ? ";
+		try {
+			if(jdbcTemplate.queryForObject(sql, new ConversationMapper(), chatId) == null)
+				return true;
+			else
+				return false;
+		}catch (EmptyResultDataAccessException e) {
+			return true;
+		}
+	}
+	
+	public int getChatId(int userId, int friendId) {
+		String sql = "SELECT conv1.conversation_id "
+				+ "FROM conversation_member conv1, conversation_member conv2 "
+				+ "WHERE conv1.conversation_id = conv2.conversation_id "
+				+ "AND conv1.user_id = ? "
+				+ "AND conv2.user_id = ? ";
+		try {
+			Id chatId = jdbcTemplate.queryForObject(sql, new IdConversationMapper(),  userId, friendId);
+			return chatId.getId();
+		}catch (EmptyResultDataAccessException e) {
+			return 0;
+		}
+	}
+	
+	public int setChatRoom(int friendId) {
+		String sql = "INSERT INTO conversation "
+				+ "(conversation_name, last_time, create_at) "
+				+ "VALUES (?, ?, ?) ";
+		User user = findById(friendId);
+		String conversationName = user.getLastName() + " " + user.getFirstName();
+		int date = DateTime.setDateToInt();
+		jdbcTemplate.update(sql, conversationName,
+								 date,
+								 date);
+		return date;
+	}
+	
+	public int getConversationId(int date) {
+		String sql = "SELECT id "
+				+ "FROM conversation "
+				+ "WHERE create_at = ? ";
+		try {
+			Id conversationId = jdbcTemplate.queryForObject(sql, new IdMapper(), date);
+			return conversationId.getId();
+		}catch (EmptyResultDataAccessException e) {
+			return 0;
+		}
+	}
+	
+	public int setMemberOfChatRoom(int date, int userId, int friendId) {
+		String sql = "INSERT INTO conversation_member "
+				+ "(conversation_id, user_id, create_at) "
+				+ "VALUES (?, ?, ?) ";
+		int conversationId = getConversationId(date);
+		jdbcTemplate.update(sql, conversationId,
+								 userId,
+								 date);
+		jdbcTemplate.update(sql, conversationId,
+								 friendId,
+								 date);
+		return conversationId;
+	}
+	
+	public int findNewestConversation(int userId) {
+		String sql = "SELECT conversation_id "
+				+ "FROM chat_sentence "
+				+ "WHERE user_id = ? "
+				+ "ORDER BY create_at DESC "
+				+ "LIMIT 1";
+		try {
+			Id conversationId = jdbcTemplate.queryForObject(sql, new IdMapper(), userId);
+			return conversationId.getId();
+		}catch (EmptyResultDataAccessException e) {
+			return 0;
+		}
+	}
+	
+	public List<ChatSentence> findListChatSentence(int chatId) {
+		String sql = "SELECT user.avatar, chat.user_id, chat.context, chat.image_url, chat.create_at "
+				+ "FROM chat_sentence chat, user "
+				+ "WHERE chat.user_id = user.id "
+				+ "AND chat.conversation_id = ? "
+				+ "ORDER BY create_at DESC ";
+		try {
+			List<ChatSentence> listChat = jdbcTemplate.query(sql, new ChatSentenceMapper(), chatId);
+			return listChat;
+		}catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+		
 	}
 }
