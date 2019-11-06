@@ -25,6 +25,7 @@
  	<c:url value="/search" var="search"/>
  	<c:url value="/addFriend" var="addFriend"/>
  	<c:url value="/chatRoom" var="chatRoom"/>
+ 	<c:url value="/sendMessage" var="sendMessage"/>
 	<div class="row">
 		<div class="chat col-md-3">
 			<div class="card contacts_card " >
@@ -115,7 +116,7 @@
 			<div class="card-body msg_card_body">
 				<c:if test= "${not empty chatsentence }">
 					<c:forEach var="chat" items="${chatsentence}">
-						<c:if test = "${chatsentence.userId != session.id }">
+						<c:if test = "${chat.userId != user.id }">
 							<div class="d-flex justify-content-start mb-4">
 								<div class="img_cont_msg">
 									<img src="<c:url value="/resources/image/${chat.avatar }"/>" class="rounded-circle user_img_msg">
@@ -126,7 +127,7 @@
 								</div>
 							</div>
 						</c:if>
-						<c:if test="${chatsentence.userId == session.id }">
+						<c:if test="${chat.userId == user.id }">
 							<div class="d-flex justify-content-end mb-4">
 								<div class="msg_cotainer_send">
 									${chat.context }
@@ -141,15 +142,16 @@
 				</c:if>
 			</div>
 			<div class="card-footer">
-				<div class="input-group">
-					<div class="input-group-append">
-						<span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+				<form:form action="${sendMessage}" method="POST">
+					<div class="input-group">	
+						<input type="hidden" name="chatId" value="${conversation.id }">
+						<input type="hidden" name="userId" value="<%= session.getAttribute("id") %>">
+						<input type="text" name="message" class="form-control type_msg" placeholder="Type your message...">
+						<div class="input-group-append">
+							<button type="submit" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
+						</div>
 					</div>
-					<textarea name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
-					<div class="input-group-append">
-						<span class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
-					</div>
-				</div>
+				</form:form>
 			</div>
 		</div>
 	</div>

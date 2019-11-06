@@ -118,7 +118,7 @@ public class MessengerService {
 		}
 	}
 	
-	public List<User> findFriendOfUserId(int id) {
+	public List<User> findListFriendOfUserId(int id) {
 		List<User> listFriend = messengerDAO.findListFriendOfUserId(id);
 		return listFriend;
 	}
@@ -152,5 +152,9 @@ public class MessengerService {
 	
 	public int findNewestConversation(int userId) {
 		return messengerDAO.findNewestConversation(userId);
+	}
+	
+	public void sendMessage(int chatId, int userId, String message) {
+		messengerDAO.sendMessage(chatId, userId, message);
 	}
 }

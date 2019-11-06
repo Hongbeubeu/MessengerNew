@@ -211,7 +211,7 @@ public class MessengerDAO {
 				+ "ORDER BY create_at DESC "
 				+ "LIMIT 1";
 		try {
-			Id conversationId = jdbcTemplate.queryForObject(sql, new IdMapper(), userId);
+			Id conversationId = jdbcTemplate.queryForObject(sql, new IdConversationMapper(), userId);
 			return conversationId.getId();
 		}catch (EmptyResultDataAccessException e) {
 			return 0;
@@ -223,13 +223,24 @@ public class MessengerDAO {
 				+ "FROM chat_sentence chat, user "
 				+ "WHERE chat.user_id = user.id "
 				+ "AND chat.conversation_id = ? "
-				+ "ORDER BY create_at DESC ";
+				+ "ORDER BY create_at ASC ";
 		try {
 			List<ChatSentence> listChat = jdbcTemplate.query(sql, new ChatSentenceMapper(), chatId);
 			return listChat;
 		}catch (EmptyResultDataAccessException e) {
 			return null;
 		}
-		
+	}
+	
+	public void sendMessage(int chatId, int userId, String message) {
+		String sql = "INSERT INTO chat_sentence "
+				+ "(conversation_id, user_id, context, image_url, create_at) "
+				+ "VALUES (?, ?, ?, ?, ?) ";
+		int date = DateTime.setDateToInt();
+		jdbcTemplate.update(sql, chatId,
+								 userId,
+								 message,
+								 null,
+								 date);	
 	}
 }

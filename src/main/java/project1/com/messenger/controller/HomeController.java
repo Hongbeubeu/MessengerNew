@@ -73,7 +73,7 @@ public class HomeController {
 		if (userId == null)
 			return "redirect:/login";
 		if(session.getAttribute("isLogin") != null && session.getAttribute("isLogin").equals(true)) {
-			model.addAttribute("listFriend", messengerService.findFriendOfUserId(userId));
+			model.addAttribute("listFriend", messengerService.findListFriendOfUserId(userId));
 			model.addAttribute("findFriend", messengerService.findFriendByEmail(email));
 			if(chatId == null) {
 				chatId = messengerService.findNewestConversation(userId);
@@ -154,14 +154,27 @@ public class HomeController {
 	@RequestMapping("/chatRoom")
 	public RedirectView chatRoom(@RequestParam("friendId") int friendId, 
 						   		 @RequestParam("userId") int userId,
-						   		 RedirectAttributes redirectAttributes,
-						   		 Model model) {
+						   		 RedirectAttributes redirectAttributes) {
 		int chatId = messengerService.getChatId(userId, friendId);
-		int date = 1;
 		if (chatId == 0) {
-			date = messengerService.setChatRoom(userId, friendId);
+			int date = messengerService.setChatRoom(userId, friendId);
 			chatId = messengerService.setMemberOfChatRoom(date, userId, friendId);
 		}
+		redirectAttributes.addAttribute("chatId", chatId);
+		redirectAttributes.addAttribute("userId", userId);
+		return new RedirectView("chat");
+	}
+	
+	@RequestMapping("/sendMessage")
+	public RedirectView sendMessage(@RequestParam("chatId") Integer chatId, 
+	   		 				  @RequestParam("userId") Integer userId,
+	   		 				  @RequestParam("message") String message,
+	   		 				RedirectAttributes redirectAttributes) {
+		if (chatId == null) {
+			redirectAttributes.addAttribute("userId", userId);
+			return new RedirectView("chat");
+		}
+		messengerService.sendMessage(chatId, userId, message);
 		redirectAttributes.addAttribute("chatId", chatId);
 		redirectAttributes.addAttribute("userId", userId);
 		return new RedirectView("chat");
