@@ -25,7 +25,7 @@ public class HomeController {
 	@RequestMapping(value = {"/", "/login"}, method= RequestMethod.GET)
 	public String directLogin(Model model) {
 		model.addAttribute("user", new User());
-		return "index";
+		return "Login";
 	}
 	
 	@RequestMapping(value = {"/register"}, method = RequestMethod.GET)
