@@ -2,18 +2,26 @@ package project1.com.messenger.entities;
 
 public class Message {
 	private String text;
-	private String name;
+	private int userId;
+	private int conversationId;
+	
 	public String getText() {
 		return text;
 	}
 	public void setText(String text) {
 		this.text = text;
 	}
-	public String getName() {
-		return name;
+	public int getUserId() {
+		return userId;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+	public int getConversationId() {
+		return conversationId;
+	}
+	public void setConversationId(int conversationId) {
+		this.conversationId = conversationId;
 	}
 	
 }
