@@ -6,12 +6,12 @@
 <body>	
 		<h2>Demo WebSocket Chat Room</h2>
 		<input id="textMessage" type="text" />
-		<input onclick="sendMessage()" value="Send Message" type="button" /> 
+		<button  onclick="sendMessage()" value="Send Message" type="submit">Send</button> 
 		<input onclick="disconnect()" value="Disconnect" type="button" /> <br/><br/>
 		<textarea id="textAreaMessage" rows="10" cols="50"></textarea>
 
 		<script type="text/javascript">
-			var websocket = new WebSocket("ws://localhost:8080/WebSocket2/chatRoomServer");
+			var websocket = new WebSocket("ws://localhost:8080/messenger/chatRoomServer");
 				websocket.onopen = function(message) {
 					processOpen(message);
 				};
