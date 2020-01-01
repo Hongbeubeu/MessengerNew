@@ -9,6 +9,9 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import project1.com.messenger.entities.Message;
 
 @ServerEndpoint(value = "/chatRoomServer")
 public class ChatRoomEndPoint {
@@ -19,10 +22,19 @@ public class ChatRoomEndPoint {
 	  }
 	  @OnMessage
 	  public void handleMessage(String message, Session userSession) throws IOException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		Message messages = new Message();
+		messages.setName("hong");
+		messages.setText("hello");
+		String json = mapper.writeValueAsString(messages);
+		Message mess = new Message();
+		mess = mapper.readValue(json, Message.class);
+		
 	    String username = (String) userSession.getUserProperties().get("username");
 	    if (username == null) {
-	      userSession.getUserProperties().put("username", message);
-	      userSession.getBasicRemote().sendText("System: you are connectd as" + message);
+	      userSession.getUserProperties().put("username", mess.getName());
+	      userSession.getBasicRemote().sendText("System: you are connectd as " + mess.getText());
 	    } else {
 	      for (Session session : users) {
 	        session.getBasicRemote().sendText(username + ": " + message);

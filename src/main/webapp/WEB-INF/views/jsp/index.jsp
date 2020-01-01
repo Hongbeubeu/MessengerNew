@@ -41,7 +41,7 @@
 
 			function sendMessage() {
 				if (typeof websocket != 'undefined' && websocket.readyState == WebSocket.OPEN) {
-					websocket.send(textMessage.value);
+					websocket.send(JSON.stringify({'from':"from", 'text':"hello"}));
 					textMessage.value = "";
 				}
 			}
