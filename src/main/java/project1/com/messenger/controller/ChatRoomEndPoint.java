@@ -27,17 +27,17 @@ public class ChatRoomEndPoint {
 		Message messages = new Message();
 		messages.setName("hong");
 		messages.setText("hello");
-		String json = mapper.writeValueAsString(messages);
+		//String json = mapper.writeValueAsString(messages);
 		Message mess = new Message();
-		mess = mapper.readValue(json, Message.class);
+		mess = mapper.readValue(message, Message.class);
 		
 	    String username = (String) userSession.getUserProperties().get("username");
 	    if (username == null) {
 	      userSession.getUserProperties().put("username", mess.getName());
-	      userSession.getBasicRemote().sendText("System: you are connectd as " + mess.getText());
+	      userSession.getBasicRemote().sendText(message);
 	    } else {
 	      for (Session session : users) {
-	        session.getBasicRemote().sendText(username + ": " + message);
+	        session.getBasicRemote().sendText(message);
 	      }
 	    }
 	  }

@@ -12,36 +12,18 @@
 
 		<script type="text/javascript">
 			var websocket = new WebSocket("ws://localhost:8080/messenger/chatRoomServer");
-				websocket.onopen = function(message) {
-					processOpen(message);
-				};
-				websocket.onmessage = function(message) {
-					processMessage(message);
-				};
-				websocket.onclose = function(message) {
-					processClose(message);
-				};
-				websocket.onerror = function(message) {
-					processError(message);
-				};
-
-			function processOpen(message) {
-				textAreaMessage.value += "Server connect... \n";
-			}
+			websocket.onmessage = function(message) {
+				processMessage(message);
+			};
 			function processMessage(message) {
-				console.log(message);
-				textAreaMessage.value += message.data + " \n";
+				console.log(message.data);
+				var obj = JSON.parse(message.data);
+				textAreaMessage.value += obj.name + " \n";
 			}
-			function processClose(message) {
-				textAreaMessage.value += "Server Disconnect... \n";
-			}
-			function processError(message) {
-				textAreaMessage.value += "Error... " + message +" \n";
-			}
-
 			function sendMessage() {
 				if (typeof websocket != 'undefined' && websocket.readyState == WebSocket.OPEN) {
-					websocket.send(JSON.stringify({'from':"from", 'text':"hello"}));
+					var text = document.getElementById("textMessage").value;
+					websocket.send(JSON.stringify({'text': text, 'name': text }));
 					textMessage.value = "";
 				}
 			}
