@@ -103,7 +103,7 @@
 						<span class="online_icon"></span>
 					</div>
 					<div class="user_info">
-						<span>${conversation.conversationName}</span>
+						<span>${fiend.lastName} ${friend.firstName }</span>
 						<p>Active now</p>
 					</div>
 					<div class="video_cam">
@@ -113,7 +113,7 @@
 				</c:if>
 				</div>
 			</div>
-			<div class="card-body msg_card_body">
+			<div id = "demo" class="card-body msg_card_body">
 				<c:if test= "${not empty chatsentence }">
 					<c:forEach var="chat" items="${chatsentence}">
 						<c:if test = "${chat.userId != user.id }">
@@ -135,6 +135,7 @@
 								</div>
 								<div class="img_cont_msg">
 									<img src="<c:url value="/resources/image/${chat.avatar }"/>" class="rounded-circle user_img_msg">
+									
 								</div>
 							</div>
 						</c:if>
@@ -142,18 +143,70 @@
 				</c:if>
 			</div>
 			<div class="card-footer">
-				<form:form action="${sendMessage}" method="POST">
 					<div class="input-group">	
-						<input type="hidden" name="chatId" value="${conversation.id }">
-						<input type="hidden" name="userId" value="<%= session.getAttribute("id") %>">
-						<input type="text" name="message" class="form-control type_msg" placeholder="Type your message...">
+						<input id = "urlImage" type = "hidden" value = "<c:url value = "/resources/image/"/>">
+						<input id = "conversationId" type="hidden" name="chatId" value="${conversation.id }">
+						<input id = "userId" type="hidden" name="userId" value="<%= session.getAttribute("id") %>">
+						<input id = "textMessage" type="text" name="message" class="form-control type_msg" placeholder="Type your message...">
 						<div class="input-group-append">
-							<button type="submit" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
+							<button onclick="sendMessage()" type="submit" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
 						</div>
 					</div>
-				</form:form>
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		
+		var websocket = new WebSocket("ws://localhost:8080/messenger/chatRoomServer");
+		
+		websocket.onmessage = function(message) {
+			processMessage(message);
+		};
+		
+		function processMessage(message) {
+			//console.log(message.data);
+			var obj = JSON.parse(message.data);
+			var div1 = document.createElement("div");
+			var att1 = document.createAttribute("class");
+			att1.value = "d-flex justify-content-end mb-4";
+			div1.setAttributeNode(att1);
+			var div2 = document.createElement("div");
+			var att2 = document.createAttribute("class");
+			att2.value = "msg_cotainer_send";
+			div2.setAttributeNode(att2);
+			var div3 = document.createElement("div");
+			var att3 = document.createAttribute("class");
+			att3.value = "img_cont_msg";
+			var img = document.createElement("img");
+			img.src = "https://genknews.genkcdn.vn/2019/3/23/photo-1-155327418308974636089.jpg";
+			div3.appendChild(img);
+			var att5 = document.createAttribute("class");
+			att5.value = "rounded-circle user_img_msg";
+			//img.src = "https://genknews.genkcdn.vn/2019/3/23/photo-1-155327418308974636089.jpg";
+			//img.setAttributeNode(att4);
+			img.setAttributeNode(att5);
+			//var message = document.createTextNode(obj.text);
+			//div2.appendChild(message);
+			div1.appendChild(div3);
+			//div2.parentNode.insertBefore(div3, div2.nextSibling);
+			var div = document.getElementById("demo");
+			div.appendChild(div1);
+		}
+		
+		function sendMessage() {
+			if (typeof websocket != 'undefined' && websocket.readyState == WebSocket.OPEN) {
+				var text = document.getElementById("textMessage").value;
+				var userId = document.getElementById("userId").value;
+				var roomId = document.getElementById("conversationId").value;
+				websocket.send(JSON.stringify({'text': text, 'userId': userId, 'conversationId': roomId }));
+				textMessage.value = "";
+			}
+		}
+		
+		function disconnect(){
+			websocket.close();
+		}
+	
+	</script>
 </body>
 </html>
